@@ -40,15 +40,14 @@ public class AddPro extends AppCompatActivity
     private ArrayList<Uri> ImageList = new ArrayList<Uri>();
     private int uploads = 0;
     private DatabaseReference databaseReference;
-    private StorageReference mStorageRef;
     private ProgressDialog progressDialog;
+    private StorageReference mStorageRef;
     int index = 0;
     TextView textView;
     Button choose,send;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_pro);
 
@@ -59,15 +58,45 @@ public class AddPro extends AppCompatActivity
         textView = findViewById(R.id.text);
         choose = findViewById(R.id.choose);
         send = findViewById(R.id.upload);
-    }
 
-    public void choose(View view) {
-        //we will pick images
-        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-        intent.setType("image/*");
-        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
-        startActivityForResult(intent, PICK_IMG);
+        choose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+                intent.setType("image/*");
+                intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+                startActivityForResult(intent, PICK_IMG);
+            }
+        });
 
+        send.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view)
+            {
+                textView.setText("Please Wait ... If Uploading takes Too much time please the button again ");
+                progressDialog.show();
+                final StorageReference ImageFolder =  FirebaseStorage.getInstance().getReference().child("ImageFolder");
+                for (uploads=0; uploads < ImageList.size(); uploads++) {
+                    Uri Image  = ImageList.get(uploads);
+                    final StorageReference imagename = ImageFolder.child("image/"+Image.getLastPathSegment());
+
+                    imagename.putFile(ImageList.get(uploads)).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                            imagename.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                @Override
+                                public void onSuccess(Uri uri) {
+
+                                    String url = String.valueOf(uri);
+                                    SendLink(url);
+                                }
+                            });
+                        }
+                    });
+                }
+            }
+        });
     }
 
     @SuppressLint("SetTextI18n")
@@ -75,15 +104,14 @@ public class AddPro extends AppCompatActivity
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == PICK_IMG)
-        {
-            if (resultCode == RESULT_OK)
-            {
+        if (requestCode == PICK_IMG) {
+            if (resultCode == RESULT_OK) {
                 if (data.getClipData() != null) {
                     int count = data.getClipData().getItemCount();
+
                     int CurrentImageSelect = 0;
-                    while (CurrentImageSelect < count)
-                    {
+
+                    while (CurrentImageSelect < count) {
                         Uri imageuri = data.getClipData().getItemAt(CurrentImageSelect).getUri();
                         ImageList.add(imageuri);
                         CurrentImageSelect = CurrentImageSelect + 1;
@@ -93,35 +121,6 @@ public class AddPro extends AppCompatActivity
                     choose.setVisibility(View.GONE);
                 }
             }
-        }
-    }
-
-    @SuppressLint("SetTextI18n")
-    public void upload(View view)
-    {
-        textView.setText("Please Wait ... If Uploading takes Too much time please the button again ");
-        progressDialog.show();
-        final StorageReference ImageFolder =  FirebaseStorage.getInstance().getReference().child("ImageFolder");
-        for (uploads=0; uploads < ImageList.size(); uploads++) {
-            Uri Image  = ImageList.get(uploads);
-            final StorageReference imagename = ImageFolder.child("image/"+Image.getLastPathSegment());
-
-            imagename.putFile(ImageList.get(uploads)).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>()
-            {
-                @Override
-                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot)
-                {
-                    imagename.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>()
-                    {
-                        @Override
-                        public void onSuccess(Uri uri)
-                        {
-                            String url = String.valueOf(uri);
-                            SendLink(url);
-                        }
-                    });
-                }
-            });
         }
     }
 

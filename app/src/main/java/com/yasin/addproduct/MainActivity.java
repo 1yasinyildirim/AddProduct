@@ -11,7 +11,7 @@ import android.widget.Button;
 public class MainActivity extends AppCompatActivity {
 
 
-    Button kamera,galeri,yukle;
+    Button kamera,galer,yukle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -19,22 +19,22 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         kamera = findViewById(R.id.camera);
-        galeri = findViewById(R.id.galery);
+        galer = findViewById(R.id.galery);
         yukle = findViewById(R.id.uplo);
 
         kamera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent camer = new Intent(MainActivity.this,Camera.class);
-                startActivity(camer);
+                Intent camery = new Intent(MainActivity.this,Camera.class);
+                startActivity(camery);
             }
         });
 
-        galeri.setOnClickListener(new View.OnClickListener() {
+        galer.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                Intent galer = new Intent(MainActivity.this,AddPro.class);
-                startActivity(galer);
+            public void onClick(View v) {
+                Intent glr = new Intent(MainActivity.this,AddPro.class);
+                startActivity(glr);
             }
         });
 

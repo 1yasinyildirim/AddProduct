@@ -44,7 +44,7 @@ public class AddPro extends AppCompatActivity
     private StorageReference mStorageRef;
     int index = 0;
     TextView textView;
-    Button choose,send;
+    Button chose,send;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,10 +56,10 @@ public class AddPro extends AppCompatActivity
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Uploading ..........");
         textView = findViewById(R.id.text);
-        choose = findViewById(R.id.choose);
+        chose = findViewById(R.id.choose);
         send = findViewById(R.id.upload);
 
-        choose.setOnClickListener(new View.OnClickListener() {
+        chose.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
@@ -74,7 +74,6 @@ public class AddPro extends AppCompatActivity
             @Override
             public void onClick(View view)
             {
-                textView.setText("Please Wait ... If Uploading takes Too much time please the button again ");
                 progressDialog.show();
                 final StorageReference ImageFolder =  FirebaseStorage.getInstance().getReference().child("ImageFolder");
                 for (uploads=0; uploads < ImageList.size(); uploads++) {
@@ -86,8 +85,8 @@ public class AddPro extends AppCompatActivity
                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                             imagename.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                                 @Override
-                                public void onSuccess(Uri uri) {
-
+                                public void onSuccess(Uri uri)
+                                {
                                     String url = String.valueOf(uri);
                                     SendLink(url);
                                 }
@@ -110,7 +109,7 @@ public class AddPro extends AppCompatActivity
                     int count = data.getClipData().getItemCount();
 
                     int CurrentImageSelect = 0;
- 
+
                     while (CurrentImageSelect < count) {
                         Uri imageuri = data.getClipData().getItemAt(CurrentImageSelect).getUri();
                         ImageList.add(imageuri);
@@ -118,7 +117,7 @@ public class AddPro extends AppCompatActivity
                     }
                     textView.setVisibility(View.VISIBLE);
                     textView.setText("You Have Selected "+ ImageList.size() +" Pictures" );
-                    choose.setVisibility(View.GONE);
+                    chose.setVisibility(View.GONE);
                 }
             }
         }
